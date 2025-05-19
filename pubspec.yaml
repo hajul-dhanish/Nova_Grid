@@ -6,7 +6,7 @@ description: >
 version: 0.0.3
 repository: https://github.com/hajul-dhanish/nova_grid
 issue_tracker: https://github.com/hajul-dhanish/nova_grid/issues
-documentation: https://github.com/yourusername/nova_grid#readme
+documentation: https://github.com/hajul-dhanish/nova_grid#readme
 
 environment:
   sdk: ^3.7.2
