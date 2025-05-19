@@ -138,9 +138,9 @@ Copyright (c) 2025
 ### CHANGELOG.md
 
 ```md
-## 1.0.0
+## 0.0.2
 - Initial stable release
-- Supports basic tables, pagination,In build column sorting and stacked headers 
+- Supports basic tables, pagination, inbuild column sorting and stacked headers 
 ```
 
 ## 🚀 Contributing
