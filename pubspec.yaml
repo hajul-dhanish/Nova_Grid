@@ -3,7 +3,7 @@ description: >
   NovaGrid is a modern Flutter data table that supports advanced features
   like stacked headers, pagination, sorting, and customizable cell widgets.
   Built for flexibility, styling, and performance on the web and mobile.
-version: 0.0.3
+version: 0.1.0
 repository: https://github.com/hajul-dhanish/nova_grid
 issue_tracker: https://github.com/hajul-dhanish/nova_grid/issues
 documentation: https://github.com/hajul-dhanish/nova_grid#readme
