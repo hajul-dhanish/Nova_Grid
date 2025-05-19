@@ -1,6 +1,7 @@
-import 'package:example/examples/basic_grid.dart';
-import 'package:example/examples/grid_with_custom_widget.dart';
-import 'package:example/examples/table_with_stacked_header.dart';
+import 'package:example/tables/basic_grid.dart';
+import 'package:example/tables/grid_with_custom_widget.dart';
+import 'package:example/tables/table_with_pagination.dart';
+import 'package:example/tables/table_with_stacked_header.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -35,6 +36,9 @@ class NovaGridExamples extends StatelessWidget {
               SizedBox(height: 10),
               Text("Table with Stacked widgets"),
               TableWithStackedHeader(),
+              SizedBox(height: 10),
+              Text("Table with Pagnation"),
+              TableWithPagination(),
             ],
           ),
         ),
