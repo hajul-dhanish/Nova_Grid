@@ -79,7 +79,7 @@ NovaGrid(
       startIndex: 0,
       endIndex: 1,
       title: 'Personal Info',
-      width: 300, //Need to add width of its child widget's width
+      width: 300, //Sum of the columns(TableColumn) widths which comes under this stacked header
     ),
   ],
 )
@@ -88,7 +88,14 @@ NovaGrid(
 ---
 
 ## 📷 Screenshots
+- Basic Table
+![Basic Table](example/screenshorts/basic_table.png)
 
+- Stacked/Multi-Header Table
+![Stacked Header Table](example/screenshorts/stacked_header_table.png)
+
+- Pagnated Table
+![Pagnated Table](example/screenshorts/paginated_table.png)
 
 ---
 
