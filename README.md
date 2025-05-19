@@ -26,7 +26,7 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nova_grid: v1.0.0
+  nova_grid: ^0.0.1
 ```
 
 Then run:
