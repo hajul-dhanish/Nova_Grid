@@ -20,23 +20,6 @@ NovaGrid is a flexible and extendable table widget:
 
 ---
 
-## ⚙️ Installation
-
-Add the package to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  nova_grid: ^0.0.2
-```
-
-Then run:
-
-```bash
-flutter pub get
-```
-
----
-
 ## 📝 Basic Usage
 
 ```dart
@@ -119,7 +102,7 @@ NovaGrid(
 
 * [ ] Sticky headers
 * [ ] Export to CSV/Excel
-* [ ] Auto Calculate width for stacked header table
+* [ ] Auto calculate width for stacked header table
 * [ ] Async Pagnation
 * [ ] In-build search filters
 
@@ -135,14 +118,6 @@ MIT License
 Copyright (c) 2025
 ```
 
-### CHANGELOG.md
-
-```md
-## 0.0.2
-- Initial stable release
-- Supports basic tables, pagination, inbuild column sorting and stacked headers 
-```
-
 ## 🚀 Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -151,14 +126,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## 🙏 Credits
 
-Crafted with passion by \Haja Mohdn, powered by Flutter and lots of coffee.
-
-<!-- --- -->
-
-<!-- ## 🎓 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. -->
-
----
+Crafted with passion by Haja Mohdn and lots of coffee.
 
 ## ✨ Happy Coding!
