@@ -1,5 +1,17 @@
 part of '../nova_grid.dart';
 
+class _RowData {
+  final String id;
+  final List<Widget> cells;
+  final List<dynamic> dropdownValues;
+
+  _RowData({
+    required this.id,
+    required this.cells,
+    required this.dropdownValues,
+  });
+}
+
 class NovaGrid extends StatefulWidget {
   final List<TableColumn> columns;
   final List<List<Widget>> rows;
@@ -31,8 +43,8 @@ class NovaGrid extends StatefulWidget {
 }
 
 class _NovaGridState extends State<NovaGrid> {
-  late List<RowData> _rowData;
-  late List<RowData> _filteredRows;
+  late List<_RowData> _rowData;
+  late List<_RowData> _filteredRows;
   final Map<int, bool> _selectionStates = {};
   int _currentPage = 0;
   bool _isLoading = false;
@@ -55,7 +67,7 @@ class _NovaGridState extends State<NovaGrid> {
   void _initializeData() {
     _rowData =
         widget.rows.map((row) {
-          return RowData(
+          return _RowData(
             id: UniqueKey().toString(),
             cells: List<Widget>.from(row),
             dropdownValues: List.filled(widget.columns.length, null),
@@ -108,7 +120,7 @@ class _NovaGridState extends State<NovaGrid> {
     setState(() {
       _isLoading = true;
       ascending = !ascending;
-      _filteredRows.sort((RowData firstRowData, RowData secondRowData) {
+      _filteredRows.sort((_RowData firstRowData, _RowData secondRowData) {
         final aWidget = firstRowData.cells[columnIndex];
         final bWidget = secondRowData.cells[columnIndex];
 
@@ -161,7 +173,7 @@ class _NovaGridState extends State<NovaGrid> {
     final int endIndex = (startIndex +
             (widget.rowsPerPage ?? defaultRowPerPage))
         .clamp(0, _filteredRows.length);
-    final List<RowData> visibleRows =
+    final List<_RowData> visibleRows =
         widget.rowsPerPage != null
             ? _filteredRows.sublist(
               startIndex,
@@ -280,7 +292,7 @@ class _NovaGridState extends State<NovaGrid> {
                             visibleRows.asMap().entries.map((entry) {
                               final int displayIndex = entry.key;
                               final int actualIndex = startIndex + displayIndex;
-                              final RowData row = entry.value;
+                              final _RowData row = entry.value;
                               return DataRow(
                                 selected:
                                     _selectionStates[actualIndex] ?? false,
