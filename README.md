@@ -94,7 +94,6 @@ NovaGrid(
 | `headerColor`      | `Color?`               | Customize header background color    |
 | `stackedHeaders`   | `List<StackedHeader>?` | Define merged headers across columns |
 | `sortable`         | `bool`                 | Enable column sorting                |
-| `emptyStateWidget` | `Widget?`              | Shown when rows are empty            |
 
 ---
 
