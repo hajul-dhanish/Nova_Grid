@@ -64,6 +64,12 @@ class GridWithCustomWidget extends StatelessWidget {
       ],
     ];
 
-    return NovaGrid(columns: columns, rows: rows);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Table with Custom widgets"),
+        NovaGrid(columns: columns, rows: rows),
+      ],
+    );
   }
 }

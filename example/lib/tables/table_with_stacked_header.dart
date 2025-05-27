@@ -59,10 +59,12 @@ class TableWithStackedHeader extends StatelessWidget {
       ],
     ];
 
-    return NovaGrid(
-      stackedHeaders: stackedHeaders,
-      columns: columns,
-      rows: rows,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Table with Stacked widgets"),
+        NovaGrid(stackedHeaders: stackedHeaders, columns: columns, rows: rows),
+      ],
     );
   }
 }

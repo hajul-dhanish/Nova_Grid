@@ -52,11 +52,17 @@ class TableWithPagination extends StatelessWidget {
       ],
     ];
 
-    return NovaGrid(
-      rowsPerPage: 5,
-      showPagination: true,
-      columns: columns,
-      rows: rows,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Table with Pagnation"),
+        NovaGrid(
+          rowsPerPage: 5,
+          showPagination: true,
+          columns: columns,
+          rows: rows,
+        ),
+      ],
     );
   }
 }

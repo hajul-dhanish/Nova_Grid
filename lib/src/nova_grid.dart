@@ -124,9 +124,6 @@ class NovaGrid extends StatefulWidget {
   /// Whether columns are sortable
   final bool sortable;
 
-  /// Widget to display when there's no data
-  final Widget? emptyStateWidget;
-
   /// List of stacked headers for column grouping
   final List<StackedHeader>? stackedHeaders;
 
@@ -142,7 +139,6 @@ class NovaGrid extends StatefulWidget {
     this.columnSpacing,
     this.stackedHeaders,
     this.sortable = true,
-    this.emptyStateWidget,
   });
 
   @override
@@ -286,11 +282,6 @@ class _NovaGridState extends State<NovaGrid> {
     stackedHeaders = _removeStackedHeaderDuplicates(stackedHeaders);
   }
 
-  /// Builds the empty state widget when no data is available
-  Widget _buildEmptyState() {
-    return widget.emptyStateWidget ?? const SizedBox();
-  }
-
   @override
   Widget build(BuildContext context) {
     // Calculate pagination values
@@ -323,8 +314,6 @@ class _NovaGridState extends State<NovaGrid> {
         // Loading indicator or content
         _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _filteredRows.isEmpty
-            ? _buildEmptyState()
             : ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
                 dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
@@ -425,31 +414,47 @@ class _NovaGridState extends State<NovaGrid> {
                           }),
                         ],
                         rows:
-                            // Generate rows from visibleRows
-                            visibleRows.asMap().entries.map((entry) {
-                              final int displayIndex = entry.key;
-                              final int actualIndex = startIndex + displayIndex;
-                              final _RowData row = entry.value;
-                              return DataRow(
-                                selected:
-                                    _selectionStates[actualIndex] ?? false,
-                                cells: [
-                                  ...row.cells.asMap().entries.map((cellEntry) {
-                                    final cellIndex = cellEntry.key;
-                                    final cell = cellEntry.value;
-                                    return DataCell(
-                                      _cellWidget(
-                                        cell,
-                                        _rowData.indexWhere(
-                                          (r) => r.id == row.id,
-                                        ),
-                                        cellIndex,
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              );
-                            }).toList(),
+                            //If rows are empty then
+                            //Empty cells return by matching with column length
+                            visibleRows.isEmpty
+                                ? [
+                                  DataRow(
+                                    cells: List.generate(
+                                      widget.columns.length,
+                                      (index) {
+                                        return DataCell(SizedBox());
+                                      },
+                                    ),
+                                  ),
+                                ]
+                                // Generate rows from visibleRows
+                                : visibleRows.asMap().entries.map((entry) {
+                                  final int displayIndex = entry.key;
+                                  final int actualIndex =
+                                      startIndex + displayIndex;
+                                  final _RowData row = entry.value;
+                                  return DataRow(
+                                    selected:
+                                        _selectionStates[actualIndex] ?? false,
+                                    cells: [
+                                      ...row.cells.asMap().entries.map((
+                                        cellEntry,
+                                      ) {
+                                        final cellIndex = cellEntry.key;
+                                        final cell = cellEntry.value;
+                                        return DataCell(
+                                          _cellWidget(
+                                            cell,
+                                            _rowData.indexWhere(
+                                              (r) => r.id == row.id,
+                                            ),
+                                            cellIndex,
+                                          ),
+                                        );
+                                      }),
+                                    ],
+                                  );
+                                }).toList(),
                       ),
                     ],
                   ),

@@ -34,6 +34,9 @@ class BasicGrid extends StatelessWidget {
       ],
     ];
 
-    return NovaGrid(columns: columns, rows: rows);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [Text("Basic Table"), NovaGrid(columns: columns, rows: rows)],
+    );
   }
 }

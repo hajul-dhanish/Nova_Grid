@@ -1,5 +1,6 @@
 import 'package:example/tables/basic_grid.dart';
 import 'package:example/tables/grid_with_custom_widget.dart';
+import 'package:example/tables/grid_with_empty_rows.dart';
 import 'package:example/tables/table_with_pagination.dart';
 import 'package:example/tables/table_with_stacked_header.dart';
 import 'package:flutter/material.dart';
@@ -25,20 +26,14 @@ class NovaGridExamples extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 10,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 20,
             children: [
-              Text("Basic Table"),
               BasicGrid(),
-              SizedBox(height: 10),
-              Text("Table with Custom widgets"),
               GridWithCustomWidget(),
-              SizedBox(height: 10),
-              Text("Table with Stacked widgets"),
               TableWithStackedHeader(),
-              SizedBox(height: 10),
-              Text("Table with Pagnation"),
               TableWithPagination(),
+              GridWithEmptyRows(),
             ],
           ),
         ),
