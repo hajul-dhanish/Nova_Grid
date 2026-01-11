@@ -174,17 +174,20 @@ class _NovaGridState extends State<NovaGrid> {
   /// Scroll controller for horizontal scrolling
   final ScrollController _scrollController = ScrollController();
 
+  /// Map of column index to calculated auto-fit width
+  final Map<int, double> _autoFitWidths = {};
+
   @override
   void initState() {
     super.initState();
     _initializeData();
+  }
 
-    // Initialize stacked headers if provided
-    if (widget.stackedHeaders?.isNotEmpty ?? false) {
-      _mapStackedHeadersToColumns(
-        columns: widget.columns,
-        headers: widget.stackedHeaders ?? [],
-      );
+  @override
+  void didUpdateWidget(NovaGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.columns != widget.columns || oldWidget.rows != widget.rows) {
+      _initializeData();
     }
   }
 
@@ -201,6 +204,99 @@ class _NovaGridState extends State<NovaGrid> {
 
     _filteredRows = List.from(_rowData);
     _initializeTable();
+
+    // Calculate auto-fit widths before mapping headers
+    _calculateAutoFitWidths();
+
+    // Initialize stacked headers if provided
+    _mapStackedHeadersToColumns(
+      columns: widget.columns,
+      headers: widget.stackedHeaders ?? [],
+    );
+  }
+
+  /// Calculates widths for columns that have autoFit set to true
+  void _calculateAutoFitWidths() {
+    _autoFitWidths.clear();
+    for (int i = 0; i < widget.columns.length; i++) {
+      if (widget.columns[i].autoFit) {
+        double maxWidth = _measureWidget(widget.columns[i].label);
+
+        for (var row in _rowData) {
+          double cellWidth = _measureWidget(row.cells[i]);
+          if (cellWidth > maxWidth) maxWidth = cellWidth;
+        }
+
+        // Add padding: 24 for cell margins + 20 for sort icon space + 8 buffer
+        _autoFitWidths[i] = maxWidth + (widget.sortable ? 52 : 32);
+      }
+    }
+  }
+
+  /// Measures the width of a widget as accurately as possible without rendering it.
+  /// Handles Text, Icons, and common layout widgets recursively.
+  double _measureWidget(Widget widget) {
+    if (widget is Text) {
+      return _measureText(widget.data ?? '', widget.style);
+    }
+
+    if (widget is Icon) {
+      return widget.size ?? 24.0;
+    }
+
+    if (widget is PreferredSizeWidget) {
+      return widget.preferredSize.width;
+    }
+
+    if (widget is Padding) {
+      return _measureWidget(widget.child!) + widget.padding.horizontal;
+    }
+
+    if (widget is Center) {
+      return widget.child != null ? _measureWidget(widget.child!) : 0.0;
+    }
+
+    if (widget is Container) {
+      if (widget.constraints != null && widget.constraints!.hasTightWidth) {
+        return widget.constraints!.minWidth;
+      }
+      return widget.child != null ? _measureWidget(widget.child!) : 0.0;
+    }
+
+    if (widget is SizedBox) {
+      if (widget.width != null) return widget.width!;
+      return widget.child != null ? _measureWidget(widget.child!) : 0.0;
+    }
+
+    if (widget is Row) {
+      double width = 0;
+      for (var child in widget.children) {
+        width += _measureWidget(child);
+      }
+      return width;
+    }
+
+    if (widget is Column) {
+      double maxWidth = 0;
+      for (var child in widget.children) {
+        double w = _measureWidget(child);
+        if (w > maxWidth) maxWidth = w;
+      }
+      return maxWidth;
+    }
+
+    // Fallback for unknown widgets
+    return 100.0;
+  }
+
+  /// Helper to measure text width using TextPainter
+  double _measureText(String text, TextStyle? style) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    return textPainter.width;
   }
 
   /// Initializes the table selection states
@@ -220,27 +316,6 @@ class _NovaGridState extends State<NovaGrid> {
     setState(() {
       _currentPage = page;
     });
-  }
-
-  /// Removes duplicate stacked headers
-  List<StackedHeader> _removeStackedHeaderDuplicates(
-    List<StackedHeader> stackedHeaders,
-  ) {
-    final Set<String> seen = <String>{};
-    final List<StackedHeader> result = <StackedHeader>[];
-
-    for (final StackedHeader header in stackedHeaders) {
-      if (header.startIndex == -1) {
-        result.add(header);
-      } else {
-        final String key = '${header.startIndex}-${header.endIndex}';
-        if (seen.add(key)) {
-          result.add(header);
-        }
-      }
-    }
-
-    return result;
   }
 
   /// Tracks sort direction
@@ -268,18 +343,57 @@ class _NovaGridState extends State<NovaGrid> {
     });
   }
 
+  double _getColumnWidth(int index) {
+    if (index < 0 || index >= widget.columns.length) return 0.0;
+    final col = widget.columns[index];
+    if (col.autoFit) {
+      return _autoFitWidths[index] ?? 100.0;
+    }
+    if (col.width != null) {
+      return col.width!;
+    }
+    return 100.0; // Default width
+  }
+
   /// Maps stacked headers to their corresponding columns
   void _mapStackedHeadersToColumns({
     required List<TableColumn> columns,
     required List<StackedHeader> headers,
   }) {
-    stackedHeaders = List.generate(columns.length, (index) {
-      return headers.firstWhere(
-        (header) => index >= header.startIndex && index <= header.endIndex,
-        orElse: () => StackedHeader(width: columns[index].width),
-      );
-    });
-    stackedHeaders = _removeStackedHeaderDuplicates(stackedHeaders);
+    final List<StackedHeader> finalHeaders = [];
+    final Map<int, StackedHeader> indexToHeader = {};
+
+    // Map user-defined headers to their indices
+    for (var header in headers) {
+      if (header.startIndex != -1 && header.endIndex != -1) {
+        double totalWidth = 0;
+        for (int i = header.startIndex; i <= header.endIndex; i++) {
+          totalWidth += _getColumnWidth(i);
+          indexToHeader[i] = header;
+        }
+        header.width = totalWidth;
+      }
+    }
+
+    // Fill gaps and build final ordered list
+    int i = 0;
+    while (i < columns.length) {
+      if (indexToHeader.containsKey(i)) {
+        final header = indexToHeader[i]!;
+        finalHeaders.add(header);
+        i = header.endIndex + 1;
+      } else {
+        finalHeaders.add(
+          StackedHeader(
+            startIndex: -1,
+            width: _getColumnWidth(i),
+            widget: const SizedBox.shrink(),
+          ),
+        );
+        i++;
+      }
+    }
+    stackedHeaders = finalHeaders;
   }
 
   @override
@@ -363,6 +477,8 @@ class _NovaGridState extends State<NovaGrid> {
                         ),
                       // Main data table
                       DataTable(
+                        columnSpacing: 0,
+                        horizontalMargin: 0,
                         border:
                             (widget.stackedHeaders?.isEmpty ?? true)
                                 ? TableBorder.all(color: Color(0xFFE3E3E3))
@@ -380,23 +496,22 @@ class _NovaGridState extends State<NovaGrid> {
                             final TableColumn column = entry.value;
                             final bool hasStackedHeaders =
                                 widget.stackedHeaders?.isNotEmpty ?? false;
+
+                            double calculatedWidth = _getColumnWidth(index);
+
                             return TableColumn(
                               headingRowAlignment: MainAxisAlignment.center,
-                              label: Column(
-                                mainAxisAlignment:
-                                    hasStackedHeaders
-                                        ? (column.isStacked
-                                            ? MainAxisAlignment.center
-                                            : MainAxisAlignment.start)
-                                        : MainAxisAlignment.center,
-                                children: [column.label],
-                              ),
-                              columnWidth:
-                                  column.width != null
-                                      ? FixedColumnWidth(column.width!)
-                                      : widget.columnSpacing != null
-                                      ? FixedColumnWidth(widget.columnSpacing!)
-                                      : column.columnWidth,
+                              label:
+                                  hasStackedHeaders
+                                      ? Column(
+                                        mainAxisAlignment:
+                                            column.isStacked
+                                                ? MainAxisAlignment.center
+                                                : MainAxisAlignment.start,
+                                        children: [column.label],
+                                      )
+                                      : Center(child: column.label),
+                              columnWidth: FixedColumnWidth(calculatedWidth),
                               onSort:
                                   widget.sortable
                                       ? (columnIndex, ascending) {
@@ -443,12 +558,15 @@ class _NovaGridState extends State<NovaGrid> {
                                         final cellIndex = cellEntry.key;
                                         final cell = cellEntry.value;
                                         return DataCell(
-                                          _cellWidget(
-                                            cell,
-                                            _rowData.indexWhere(
-                                              (r) => r.id == row.id,
+                                          SizedBox(
+                                            width: _getColumnWidth(cellIndex),
+                                            child: _cellWidget(
+                                              cell,
+                                              _rowData.indexWhere(
+                                                (r) => r.id == row.id,
+                                              ),
+                                              cellIndex,
                                             ),
-                                            cellIndex,
                                           ),
                                         );
                                       }),
@@ -463,13 +581,12 @@ class _NovaGridState extends State<NovaGrid> {
             ),
         // Pagination controls
         if (widget.showPagination &&
-            _filteredRows.isNotEmpty &&
-            widget.rowsPerPage != null)
-          if (widget.showPagination &&
-              !(_filteredRows.length <=
-                  (widget.rowsPerPage ?? defaultRowPerPage)))
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
+            widget.rowsPerPage != null &&
+            _filteredRows.length > (widget.rowsPerPage ?? defaultRowPerPage))
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 10,
@@ -486,6 +603,7 @@ class _NovaGridState extends State<NovaGrid> {
                 ],
               ),
             ),
+          ),
       ],
     );
   }

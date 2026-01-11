@@ -3,6 +3,7 @@ import 'package:example/tables/grid_with_custom_widget.dart';
 import 'package:example/tables/grid_with_empty_rows.dart';
 import 'package:example/tables/table_with_pagination.dart';
 import 'package:example/tables/table_with_stacked_header.dart';
+import 'package:example/tables/auto_fit_example.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -32,6 +33,7 @@ class NovaGridExamples extends StatelessWidget {
               BasicGrid(),
               GridWithCustomWidget(),
               TableWithStackedHeader(),
+              const AutoFitExample(),
               TableWithPagination(),
               GridWithEmptyRows(),
             ],

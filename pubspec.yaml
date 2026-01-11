@@ -1,6 +1,6 @@
 name: nova_grid
 description: NovaGrid is a modern Flutter data table. Built for flexibility, styling, and performance on the web and mobile.
-version: 0.1.1
+version: 0.2.0
 repository: https://github.com/hajul-dhanish/nova_grid
 issue_tracker: https://github.com/hajul-dhanish/nova_grid/issues
 documentation: https://github.com/hajul-dhanish/nova_grid#readme
