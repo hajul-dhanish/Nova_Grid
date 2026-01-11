@@ -10,13 +10,11 @@ class TableWithStackedHeader extends StatelessWidget {
       StackedHeader(
         startIndex: 1,
         endIndex: 2,
-        width: 300,
         widget: Center(child: Text("Personal Details")),
       ),
       StackedHeader(
         startIndex: 3,
         endIndex: 4,
-        width: 330,
         widget: Center(child: Text("Academic Performance")),
       ),
     ];

@@ -10,13 +10,14 @@ It is designed for Flutter web and desktop applications where native-feeling, in
 
 NovaGrid is a flexible and extendable table widget:
 
-* Customizable column definitions
-* Fixed row height for consistent layouts
-* Optional pagination
-* Support for stacked (merged) headers
-* Sortable columns
-* Clean, professional UI
-* Designed with accessibility and performance in mind
+- Customizable column definitions
+- Auto-fit column widths (content-based scaling)
+- Fixed row height for consistent layouts
+- Optional pagination
+- Support for simplified stacked (merged) headers
+- Sortable columns
+- Clean, professional UI
+- Designed with accessibility and performance in mind
 
 ---
 
@@ -38,21 +39,17 @@ NovaGrid(
 
 ---
 
-## 🔢 Example with Pagination and Stacked Headers
+## 🔢 Example with Auto-fit and Simplified Stacked Headers
 
 ```dart
 NovaGrid(
   columns: [
     TableColumn(
-        title: 'Name', 
-        width: 150, //width is mandatory for stacked headers
-        isStacked: true, //Mark it true for stacked headers
+        title: 'Name',
+        autoFit: true, // Automatically expands to fit content
         ),
-    TableColumn(title: 'Age', width: 150, isStacked: true),
-    TableColumn(
-        title: 'Country', 
-        width: 150, //Width is mandatory in stacked header tables even if its not marked as one
-        ),
+    TableColumn(title: 'Role', autoFit: true),
+    TableColumn(title: 'Country', width: 150),
   ],
   rows: [...],
   showPagination: true,
@@ -61,8 +58,7 @@ NovaGrid(
     StackedHeader(
       startIndex: 0,
       endIndex: 1,
-      title: 'Personal Info',
-      width: 300, //Sum of the columns(TableColumn) widths which comes under this stacked header
+      widget: Center(child: Text('User Details')), // Width is calculated automatically!
     ),
   ],
 )
@@ -71,39 +67,40 @@ NovaGrid(
 ---
 
 ## 📷 Screenshots
+
 - Basic Table
-![Basic Table](example/screenshorts/basic_table.png)
+  ![Basic Table](example/screenshorts/basic_table.png)
 
 - Stacked/Multi-Header Table
-![Stacked Header Table](example/screenshorts/stacked_header_table.png)
+  ![Stacked Header Table](example/screenshorts/stacked_header_table.png)
 
 - Pagnated Table
-![Pagnated Table](example/screenshorts/paginated_table.png)
+  ![Pagnated Table](example/screenshorts/paginated_table.png)
 
 ---
 
 ## ✏️ Customization Options
 
-| Property           | Type                   | Description                          |
-| ------------------ | ---------------------- | ------------------------------------ |
-| `columns`          | `List<TableColumn>`    | Defines each column header           |
-| `rows`             | `List<List<Widget>>`   | Defines the cell contents            |
-| `rowHeight`        | `double`               | Height of each row (default: 56)     |
-| `rowsPerPage`      | `int?`                 | Optional pagination size             |
-| `showPagination`   | `bool`                 | Whether to show pagination controls  |
-| `headerColor`      | `Color?`               | Customize header background color    |
-| `stackedHeaders`   | `List<StackedHeader>?` | Define merged headers across columns |
-| `sortable`         | `bool`                 | Enable column sorting                |
+| Property         | Type                   | Description                                   |
+| ---------------- | ---------------------- | --------------------------------------------- |
+| `columns`        | `List<TableColumn>`    | Defines each column header                    |
+| `rows`           | `List<List<Widget>>`   | Defines the cell contents                     |
+| `rowHeight`      | `double`               | Height of each row (default: 56)              |
+| `rowsPerPage`    | `int?`                 | Optional pagination size                      |
+| `showPagination` | `bool`                 | Whether to show pagination controls           |
+| `headerColor`    | `Color?`               | Customize header background color             |
+| `stackedHeaders` | `List<StackedHeader>?` | Define merged headers across columns          |
+| `sortable`       | `bool`                 | Enable column sorting                         |
+| `autoFit`        | `bool`                 | (In `TableColumn`) Auto-size based on content |
 
 ---
 
 ## 🚀 Future Roadmap
 
-* [ ] Sticky headers
-* [ ] Export to CSV/Excel
-* [ ] Auto calculate width for stacked header table
-* [ ] Async Pagnation
-* [ ] In-build search filters
+- [ ] Sticky headers
+- [ ] Export to CSV/Excel
+- [ ] Async Pagination
+- [ ] In-build search filters
 
 ---
 
